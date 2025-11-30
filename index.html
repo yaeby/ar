@@ -215,31 +215,83 @@
     <a-entity light="type: ambient; intensity: 0.8"></a-entity>
     <a-entity light="type: directional; intensity: 0.6" position="0 1 1"></a-entity>
 
-    <!-- NFT Marker (Image Tracking) -->
+    <!-- ================================================================== -->
+    <!-- MARKER 1: MAP (The Start) -->
+    <!-- Logic: Always shows the Island (Model 2) to lead you there. -->
+    <!-- Unlocks: Stage 1 -->
+    <!-- ================================================================== -->
     <a-nft
       type="nft"
-      url="./priza"
-      smooth="true"
-      smoothCount="10"
-      smoothTolerance=".01"
-      smoothThreshold="5"
-      id="marker">
-
-      <!-- Wrapper for scaling (NFT markers are huge in units) -->
+      url="assets/markers/map"
+      smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5"
+      id="marker-map">
+      
       <a-entity scale="150 150 150">
-          <!-- Invisible drag plane anchored to marker -->
-          <a-plane id="dragplane" class="raytarget"
-                   position="0 0 0" rotation="-90 0 0" width="2" height="2"
-                   material="color: #000; opacity: 0; transparent: true"></a-plane>
+        <!-- Correct Model: 2_island -->
+        <a-entity gltf-model="assets/models/2_island/scene.gltf"
+                  position="0 0 0" scale="1 1 1"
+                  class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
+        </a-entity>
+      </a-entity>
+    </a-nft>
 
-          <!-- Interactive object -->
-          <a-box id="cube" class="raytarget"
-                 position="0 0.25 0" depth="0.5" height="0.5" width="0.5"
-                 material="metalness:0.1; roughness:0.6; color:#4CC3D9"
-                 tap-gestures spin-toggle
-                 drag-on-plane="plane: #dragplane; yOffset: 0.25; radius: 0.6"
-                 pinch-scale twist-rotate>
-          </a-box>
+    <!-- ================================================================== -->
+    <!-- MARKER 2: ISLAND -->
+    <!-- Logic: Shows Ship (Model 3) IF Stage >= 1. Else shows Map (Model 1). -->
+    <!-- Unlocks: Stage 2 -->
+    <!-- ================================================================== -->
+    <a-nft
+      type="nft"
+      url="assets/markers/island"
+      smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5"
+      id="marker-island">
+      
+      <a-entity scale="150 150 150">
+        <!-- LOCKED STATE: 1_pirate_map -->
+        <a-entity id="island-locked"
+                  gltf-model="assets/models/1_pirate_map/scene.gltf"
+                  visible="true"
+                  position="0 0 0" scale="1 1 1"
+                  class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
+        </a-entity>
+
+        <!-- UNLOCKED STATE: 3_ship_in_a_bottle -->
+        <a-entity id="island-unlocked"
+                  gltf-model="assets/models/3_ship_in_a_bottle/scene.gltf"
+                  visible="false"
+                  position="0 0 0" scale="1 1 1"
+                  class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
+        </a-entity>
+      </a-entity>
+    </a-nft>
+
+    <!-- ================================================================== -->
+    <!-- MARKER 3: SHIP BOTTLE -->
+    <!-- Logic: Shows Flag (Model 4) IF Stage >= 2. Else shows Map (Model 1). -->
+    <!-- Unlocks: Stage 3 -->
+    <!-- ================================================================== -->
+    <a-nft
+      type="nft"
+      url="assets/markers/ship_bottle"
+      smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5"
+      id="marker-ship">
+      
+      <a-entity scale="150 150 150">
+        <!-- LOCKED STATE: 1_pirate_map -->
+        <a-entity id="ship-locked"
+                  gltf-model="assets/models/1_pirate_map/scene.gltf"
+                  visible="true"
+                  position="0 0 0" scale="1 1 1"
+                  class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
+        </a-entity>
+
+        <!-- UNLOCKED STATE: 4_pirate_flag_animated -->
+        <a-entity id="ship-unlocked"
+                  gltf-model="assets/models/4_pirate_flag_animated/scene.gltf"
+                  visible="false"
+                  position="0 0 0" scale="1 1 1"
+                  class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
+        </a-entity>
       </a-entity>
     </a-nft>
 
@@ -248,33 +300,126 @@
 
   <script>
     const hud  = document.getElementById('hud');
-    const cube = document.getElementById('cube');
+    
+    // --- Game State ---
+    let currentStage = 0; 
+    // 0 = Start (Find Map)
+    // 1 = Map Found (Find Island)
+    // 2 = Island Found (Find Ship)
+    // 3 = Ship Found (Find Flag/End)
 
-    // Buttons
+    // --- Elements ---
+    const m_map    = document.getElementById('marker-map');
+    const m_island = document.getElementById('marker-island');
+    const m_ship   = document.getElementById('marker-ship');
+
+    const island_locked   = document.getElementById('island-locked');
+    const island_unlocked = document.getElementById('island-unlocked');
+    const ship_locked     = document.getElementById('ship-locked');
+    const ship_unlocked   = document.getElementById('ship-unlocked');
+
+    // --- Logic ---
+    
+    // 1. Found MAP -> Unlock Stage 1
+    m_map.addEventListener('markerFound', () => {
+      console.log("Map found!");
+      if (currentStage < 1) {
+        currentStage = 1;
+        updateVisibility();
+        alert("Map Found! Next clue unlocked: Find the Island.");
+      }
+    });
+
+    // 2. Found ISLAND -> Unlock Stage 2 (if allowed)
+    m_island.addEventListener('markerFound', () => {
+      console.log("Island found!");
+      if (currentStage >= 1) {
+        if (currentStage < 2) {
+          currentStage = 2;
+          updateVisibility();
+          alert("Island Found! Next clue unlocked: Find the Ship in a Bottle.");
+        }
+      } else {
+        // Locked message (optional, since we show the locked model)
+        console.log("Island locked. Find Map first.");
+      }
+    });
+
+    // 3. Found SHIP -> Unlock Stage 3 (if allowed)
+    m_ship.addEventListener('markerFound', () => {
+      console.log("Ship found!");
+      if (currentStage >= 2) {
+        if (currentStage < 3) {
+          currentStage = 3;
+          updateVisibility();
+          alert("Ship Found! You found the Pirate Flag!");
+        }
+      } else {
+        console.log("Ship locked. Find Island first.");
+      }
+    });
+
+    function updateVisibility() {
+      // Island Marker Logic
+      if (currentStage >= 1) {
+        island_locked.setAttribute('visible', 'false');
+        island_unlocked.setAttribute('visible', 'true');
+      } else {
+        island_locked.setAttribute('visible', 'true');
+        island_unlocked.setAttribute('visible', 'false');
+      }
+
+      // Ship Marker Logic
+      if (currentStage >= 2) {
+        ship_locked.setAttribute('visible', 'false');
+        ship_unlocked.setAttribute('visible', 'true');
+      } else {
+        ship_locked.setAttribute('visible', 'true');
+        ship_unlocked.setAttribute('visible', 'false');
+      }
+    }
+
+    // Initialize
+    updateVisibility();
+
+
+    // Buttons (Generic rotation helper for whatever is visible)
+    // Note: This simple logic rotates ALL models. In a real app you'd target the visible one.
     document.getElementById('btn-rot-l').addEventListener('click', () => nudgeRot(-15));
     document.getElementById('btn-rot-r').addEventListener('click', () => nudgeRot( 15));
+    
     function nudgeRot(delta){
-      const r = cube.getAttribute('rotation');
-      cube.setAttribute('rotation', {x:r.x, y:r.y + delta, z:r.z});
+      const models = document.querySelectorAll('a-entity[gltf-model]');
+      models.forEach(el => {
+        if(el.getAttribute('visible') !== false) {
+           const r = el.getAttribute('rotation');
+           el.setAttribute('rotation', {x:r.x, y:r.y + delta, z:r.z});
+        }
+      });
     }
 
     document.getElementById('btn-scale--').addEventListener('click', () => nudgeScale(0.9));
     document.getElementById('btn-scale-+').addEventListener('click', () => nudgeScale(1.1));
     function nudgeScale(mult){
-      const s = cube.getAttribute('scale');
-      cube.setAttribute('scale', {
-        x: clamp(s.x * mult, 0.2, 3),
-        y: clamp(s.y * mult, 0.2, 3),
-        z: clamp(s.z * mult, 0.2, 3)
+      const models = document.querySelectorAll('a-entity[gltf-model]');
+      models.forEach(el => {
+        if(el.getAttribute('visible') !== false) {
+           const s = el.getAttribute('scale');
+           el.setAttribute('scale', {
+             x: clamp(s.x * mult, 0.1, 10),
+             y: clamp(s.y * mult, 0.1, 10),
+             z: clamp(s.z * mult, 0.1, 10)
+           });
+        }
       });
     }
 
-    document.getElementById('btn-color').addEventListener('click', () => cube.emit('random-color'));
+    // document.getElementById('btn-color').addEventListener('click', () => cube.emit('random-color'));
 
     // Gesture hooks
-    cube.addEventListener('tap',       () => cube.emit('toggle-spin'));        // single tap: spin on/off
-    cube.addEventListener('doubletap', () => cube.emit('random-color'));       // double tap: recolor
-    cube.addEventListener('longpress', () => hud.classList.toggle('hidden'));  // long press: show/hide HUD
+    // cube.addEventListener('tap',       () => cube.emit('toggle-spin'));        // single tap: spin on/off
+    // cube.addEventListener('doubletap', () => cube.emit('random-color'));       // double tap: recolor
+    // cube.addEventListener('longpress', () => hud.classList.toggle('hidden'));  // long press: show/hide HUD
   </script>
 </body>
 </html>
