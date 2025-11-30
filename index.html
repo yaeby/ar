@@ -7,8 +7,8 @@
 
   <!-- A-Frame -->
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <!-- AR.js for A-Frame (marker-based AR) -->
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+  <!-- AR.js for A-Frame (Image Tracking) -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
 
   <style>
     body { margin:0; overflow:hidden; }
@@ -24,6 +24,13 @@
       padding: 10px 12px; border: 0; border-radius: 10px;
       background: rgba(255,255,255,.9);
     }
+    /* Loader for NFT */
+    .arjs-loader {
+      height: 100%; width: 100%; position: absolute; top: 0; left: 0;
+      background-color: rgba(0, 0, 0, 0.8); z-index: 9999;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .arjs-loader div { text-align: center; font-size: 1.25em; color: white; }
   </style>
 
   <script>
@@ -181,6 +188,11 @@
   </script>
 </head>
 <body>
+  <!-- Loader -->
+  <div class="arjs-loader">
+    <div>Loading, please wait...</div>
+  </div>
+
   <!-- HUD -->
   <div class="hud" id="hud">
     <button id="btn-rot-l">⟲</button>
@@ -192,9 +204,9 @@
 
   <a-scene
     embedded
-    renderer="colorManagement: true; physicallyCorrectLights: true"
-    xr-mode-ui="enabled: false"
-    arjs="sourceType: webcam; detectionMode: mono; debugUIEnabled: false">
+    renderer="colorManagement: true; physicallyCorrectLights: true; logarithmicDepthBuffer: true;"
+    vr-mode-ui="enabled: false"
+    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
 
     <!-- Cursor ray for mouse/touch (A-Frame builds a raycaster object3D for us) -->
     <a-entity id="ray" cursor="rayOrigin: mouse" raycaster="objects: .raytarget"></a-entity>
@@ -203,26 +215,33 @@
     <a-entity light="type: ambient; intensity: 0.8"></a-entity>
     <a-entity light="type: directional; intensity: 0.6" position="0 1 1"></a-entity>
 
-    <!-- Marker -->
-    <a-marker preset="hiro" id="marker">
+    <!-- NFT Marker (Image Tracking) -->
+    <a-nft
+      type="nft"
+      url="./priza"
+      smooth="true"
+      smoothCount="10"
+      smoothTolerance=".01"
+      smoothThreshold="5"
+      id="marker">
 
-      <!-- Invisible drag plane anchored to marker -->
-      <a-plane id="dragplane" class="raytarget"
-               position="0 0 0" rotation="-90 0 0" width="2" height="2"
-               material="color: #000; opacity: 0; transparent: true"></a-plane>
+      <!-- Wrapper for scaling (NFT markers are huge in units) -->
+      <a-entity scale="150 150 150">
+          <!-- Invisible drag plane anchored to marker -->
+          <a-plane id="dragplane" class="raytarget"
+                   position="0 0 0" rotation="-90 0 0" width="2" height="2"
+                   material="color: #000; opacity: 0; transparent: true"></a-plane>
 
-      <!-- Interactive object -->
-      <a-box id="cube" class="raytarget"
-             position="0 0.25 0" depth="0.5" height="0.5" width="0.5"
-             material="metalness:0.1; roughness:0.6; color:#4CC3D9"
-             tap-gestures spin-toggle
-             drag-on-plane="plane: #dragplane; yOffset: 0.25; radius: 0.6"
-             pinch-scale twist-rotate>
-      </a-box>
-
-      <!-- Marker center dot (optional) -->
-      <a-cylinder radius="0.01" height="0.001" color="#888"></a-cylinder>
-    </a-marker>
+          <!-- Interactive object -->
+          <a-box id="cube" class="raytarget"
+                 position="0 0.25 0" depth="0.5" height="0.5" width="0.5"
+                 material="metalness:0.1; roughness:0.6; color:#4CC3D9"
+                 tap-gestures spin-toggle
+                 drag-on-plane="plane: #dragplane; yOffset: 0.25; radius: 0.6"
+                 pinch-scale twist-rotate>
+          </a-box>
+      </a-entity>
+    </a-nft>
 
     <a-entity camera></a-entity>
   </a-scene>
