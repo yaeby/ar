@@ -248,9 +248,10 @@
   <!-- Level Bar -->
   <div class="level-bar">
     <div class="level-dot active" id="lvl-1">🗺️</div>
-    <div class="level-dot" id="lvl-2">🏝️</div>
+    <div class="level-dot" id="lvl-2">🍾</div>
     <div class="level-dot" id="lvl-3">⛵</div>
-    <div class="level-dot" id="lvl-4">👻</div>
+    <div class="level-dot" id="lvl-4">🏴‍☠️</div>
+    <div class="level-dot" id="lvl-5">💎</div>
   </div>
 
   <!-- Story Overlay -->
@@ -266,7 +267,6 @@
     <button id="btn-rot-r">⟳</button>
     <button id="btn-scale--">−</button>
     <button id="btn-scale-+">＋</button>
-    <button id="btn-color">🎨</button>
   </div>
 
   <a-scene
@@ -525,12 +525,20 @@
 
 
     function updateVisibility() {
-      // Update Level Bar (Simplified)
+      // Update Level Bar
       const dots = document.querySelectorAll('.level-dot');
-      if(dots.length > 0) dots[0].className = currentStage >= 0 ? 'level-dot completed' : 'level-dot';
-      if(dots.length > 1) dots[1].className = currentStage >= 2 ? 'level-dot completed' : (currentStage >= 1 ? 'level-dot active' : 'level-dot');
-      if(dots.length > 2) dots[2].className = currentStage >= 4 ? 'level-dot completed' : (currentStage >= 3 ? 'level-dot active' : 'level-dot');
-      if(dots.length > 3) dots[3].className = currentStage >= 5 ? 'level-dot completed' : (currentStage >= 4 ? 'level-dot active' : 'level-dot');
+      // Stage 0: Start (No dots done)
+      // Stage 1: Map Found (Dot 1 Done, Dot 2 Active)
+      // Stage 2: Bottle Found (Dot 2 Done, Dot 3 Active)
+      // Stage 3: Ship Found (Dot 3 Done, Dot 4 Active)
+      // Stage 4: Pirate Found (Dot 4 Done, Dot 5 Active)
+      // Stage 5: Jesus Found (All Done)
+
+      if(dots.length > 0) dots[0].className = currentStage >= 1 ? 'level-dot completed' : 'level-dot active';
+      if(dots.length > 1) dots[1].className = currentStage >= 2 ? 'level-dot completed' : (currentStage === 1 ? 'level-dot active' : 'level-dot');
+      if(dots.length > 2) dots[2].className = currentStage >= 3 ? 'level-dot completed' : (currentStage === 2 ? 'level-dot active' : 'level-dot');
+      if(dots.length > 3) dots[3].className = currentStage >= 4 ? 'level-dot completed' : (currentStage === 3 ? 'level-dot active' : 'level-dot');
+      if(dots.length > 4) dots[4].className = currentStage >= 5 ? 'level-dot completed' : (currentStage === 4 ? 'level-dot active' : 'level-dot');
 
       // Helper to toggle locked/unlocked models
       const toggle = (idLocked, idUnlocked, unlocked) => {
@@ -597,13 +605,6 @@
         }
       });
     }
-
-    // document.getElementById('btn-color').addEventListener('click', () =>                     e.emit('random-color'));
-
-    // Gesture hooks
-    // cube.addEventListener('tap',       () => cube.emit('toggle-spin'));        // single tap: spin on/off
-    // cube.addEventListener('doubletap', () => cube.emit('random-color'));       // double tap: recolor
-    // cube.addEventListener('longpress', () => hud.classList.toggle('hidden'));  // long press: show/hide HUD
   </script>
 </body>
 </html>
