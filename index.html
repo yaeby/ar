@@ -240,6 +240,11 @@
     <div>Loading the Pirate World...</div>
   </div>
 
+  <!-- DEBUG LOG -->
+  <div id="debug-log" style="position: fixed; top: 60px; left: 50%; transform: translateX(-50%); color: red; background: rgba(255,255,255,0.8); padding: 5px; z-index: 10000; font-weight: bold;">
+    Waiting for marker...
+  </div>
+
   <!-- Level Bar -->
   <div class="level-bar">
     <div class="level-dot active" id="lvl-1">🗺️</div>
@@ -289,6 +294,9 @@
       id="marker-map">
       
       <a-entity scale="150 150 150">
+        <!-- DEBUG BOX: If you see this red box, the marker is working! -->
+        <a-box position="0 1 0" scale="0.5 0.5 0.5" material="color: red; opacity: 0.5"></a-box>
+
         <!-- Correct Model: 2_island -->
         <!-- Rotation fix: -90 0 0 is standard for flat markers. If side view needed, try 0 0 0 or -90 90 0 -->
         <a-entity gltf-model="assets/models/2_island/scene.gltf"
@@ -310,6 +318,9 @@
       id="marker-island">
       
       <a-entity scale="150 150 150">
+        <!-- DEBUG BOX: If you see this blue box, the marker is working! -->
+        <a-box position="0 1 0" scale="0.5 0.5 0.5" material="color: blue; opacity: 0.5"></a-box>
+
         <!-- LOCKED STATE: 1_pirate_map -->
         <a-entity id="island-locked"
                   gltf-model="assets/models/1_pirate_map/scene.gltf"
@@ -537,6 +548,16 @@
     const ship_locked     = document.getElementById('ship-locked');
     const ship_unlocked   = document.getElementById('ship-unlocked');
     // Pirate, Shark, Jesus, Chest don't have locked/unlocked pairs in the same way, or are handled dynamically
+
+    // --- DEBUG LOGGING ---
+    const debugEl = document.getElementById('debug-log');
+    function log(msg) { if(debugEl) debugEl.innerText = msg; console.log(msg); }
+    
+    [m_map, m_island, m_ship_bottle, m_ship, m_pirate, m_shark, m_jesus, m_chest].forEach(m => {
+       if(!m) return;
+       m.addEventListener('markerFound', () => log("Found: " + m.id));
+       m.addEventListener('markerLost',  () => log("Lost: " + m.id));
+    });
 
     // --- Logic ---
     
