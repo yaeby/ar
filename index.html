@@ -319,8 +319,69 @@
         </a-entity>
 
         <!-- UNLOCKED STATE: 3_ship_in_a_bottle -->
+        <!-- Rotation Fix: Rotated 180 on Y to see from right/front instead of back -->
         <a-entity id="island-unlocked"
                   gltf-model="assets/models/3_ship_in_a_bottle/scene.gltf"
+                  visible="false"
+                  position="0 0 0" scale="1 1 1" rotation="-90 180 0"
+                  class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
+        </a-entity>
+      </a-entity>
+    </a-nft>
+
+    <!-- ================================================================== -->
+    <!-- MARKER 3: SHIP BOTTLE -->
+    <!-- Logic: Shows Ghost Ship (Model 4) IF Stage >= 2. Else shows Map (Model 1). -->
+    <!-- Unlocks: Stage 3 -->
+    <!-- ================================================================== -->
+    <a-nft
+      type="nft"
+      url="assets/markers/ship_bottle"
+      smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5"
+      id="marker-ship-bottle">
+      
+      <a-entity scale="150 150 150">
+        <!-- LOCKED STATE: 1_pirate_map -->
+        <a-entity id="ship-bottle-locked"
+                  gltf-model="assets/models/1_pirate_map/scene.gltf"
+                  visible="true"
+                  position="0 0 0" scale="1 1 1" rotation="-90 0 0"
+                  class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
+        </a-entity>
+
+        <!-- UNLOCKED STATE: 4_ghost_ship -->
+        <!-- Rotation Fix: 0 0 0 to make it vertical/upright -->
+        <a-entity id="ship-bottle-unlocked"
+                  gltf-model="assets/models/4_ghost_ship/scene.gltf"
+                  visible="false"
+                  position="0 0 0" scale="1 1 1" rotation="0 0 0"
+                  class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
+        </a-entity>
+      </a-entity>
+    </a-nft>
+
+    <!-- ================================================================== -->
+    <!-- MARKER 4: SHIP (The Attack) -->
+    <!-- Logic: Shows Pirate (Model 5) IF Stage >= 3. -->
+    <!-- Unlocks: Stage 4 -->
+    <!-- ================================================================== -->
+    <a-nft
+      type="nft"
+      url="assets/markers/ship"
+      smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5"
+      id="marker-ship">
+      
+      <a-entity scale="150 150 150">
+        <!-- LOCKED -->
+        <a-entity id="ship-locked"
+                  gltf-model="assets/models/1_pirate_map/scene.gltf"
+                  visible="true"
+                  position="0 0 0" scale="1 1 1" rotation="-90 0 0">
+        </a-entity>
+
+        <!-- UNLOCKED: 5_pirate_a -->
+        <a-entity id="ship-unlocked"
+                  gltf-model="assets/models/5_pirate_a/scene.gltf"
                   visible="false"
                   position="0 0 0" scale="1 1 1" rotation="-90 0 0"
                   class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
@@ -329,32 +390,115 @@
     </a-nft>
 
     <!-- ================================================================== -->
-    <!-- MARKER 3: SHIP BOTTLE -->
-    <!-- Logic: Shows Ghost Ship (Model 5) IF Stage >= 2. Else shows Map (Model 1). -->
-    <!-- Unlocks: Stage 3 -->
+    <!-- MARKER 5: PIRATE (The Battle) -->
+    <!-- Logic: Shows Gun+Explosion, then Shark. -->
+    <!-- Unlocks: Stage 5 -->
     <!-- ================================================================== -->
     <a-nft
       type="nft"
-      url="assets/markers/ship_bottle"
+      url="assets/markers/pirate"
       smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5"
-      id="marker-ship">
+      id="marker-pirate">
       
       <a-entity scale="150 150 150">
-        <!-- LOCKED STATE: 1_pirate_map -->
-        <a-entity id="ship-locked"
+        <!-- LOCKED -->
+        <a-entity id="pirate-locked"
                   gltf-model="assets/models/1_pirate_map/scene.gltf"
                   visible="true"
-                  position="0 0 0" scale="1 1 1" rotation="-90 0 0"
-                  class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
+                  position="0 0 0" scale="1 1 1" rotation="-90 0 0">
         </a-entity>
 
-        <!-- UNLOCKED STATE: 5_ghost_ship -->
-        <a-entity id="ship-unlocked"
-                  gltf-model="assets/models/5_ghost_ship/scene.gltf"
+        <!-- UNLOCKED PHASE 1: Gun + Explosion -->
+        <a-entity id="pirate-phase1" visible="false">
+            <a-entity gltf-model="assets/models/5.1_pirate_gun/scene.gltf"
+                      position="-0.5 0 0" scale="1 1 1" rotation="-90 0 0"></a-entity>
+            <a-entity gltf-model="assets/models/5.2_timeframe_explosion/scene.gltf"
+                      position="0 0 0" scale="1 1 1" rotation="-90 0 0"></a-entity>
+        </a-entity>
+
+        <!-- UNLOCKED PHASE 2: Shark -->
+        <a-entity id="pirate-phase2" visible="false">
+            <a-entity gltf-model="assets/models/6_great_white_shark/scene.gltf"
+                      position="0 0 0" scale="1 1 1" rotation="-90 0 0"
+                      animation="property: position; to: 0 0.5 0; dir: alternate; loop: true; dur: 2000"></a-entity>
+        </a-entity>
+      </a-entity>
+    </a-nft>
+
+    <!-- ================================================================== -->
+    <!-- MARKER 6: SHARK (The Dive) -->
+    <!-- Logic: Shows Christ of Abyss. -->
+    <!-- Unlocks: Stage 6 -->
+    <!-- ================================================================== -->
+    <a-nft
+      type="nft"
+      url="assets/markers/shark"
+      smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5"
+      id="marker-shark">
+      
+      <a-entity scale="150 150 150">
+        <!-- LOCKED -->
+        <a-entity id="shark-locked"
+                  gltf-model="assets/models/1_pirate_map/scene.gltf"
+                  visible="true"
+                  position="0 0 0" scale="1 1 1" rotation="-90 0 0">
+        </a-entity>
+
+        <!-- UNLOCKED: 7_christ_of_the_abyss -->
+        <a-entity id="shark-unlocked"
+                  gltf-model="assets/models/7_christ_of_the_abyss/scene.gltf"
                   visible="false"
                   position="0 0 0" scale="1 1 1" rotation="-90 0 0"
                   class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
         </a-entity>
+      </a-entity>
+    </a-nft>
+
+    <!-- ================================================================== -->
+    <!-- MARKER 7: JESUS (The Treasure Location) -->
+    <!-- Logic: Shows Chest. -->
+    <!-- Unlocks: Stage 7 -->
+    <!-- ================================================================== -->
+    <a-nft
+      type="nft"
+      url="assets/markers/jesus_under_whater"
+      smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5"
+      id="marker-jesus">
+      
+      <a-entity scale="150 150 150">
+        <!-- LOCKED -->
+        <a-entity id="jesus-locked"
+                  gltf-model="assets/models/1_pirate_map/scene.gltf"
+                  visible="true"
+                  position="0 0 0" scale="1 1 1" rotation="-90 0 0">
+        </a-entity>
+
+        <!-- UNLOCKED: 8_medieval_chest -->
+        <a-entity id="jesus-unlocked"
+                  gltf-model="assets/models/8_medieval_chest/scene.gltf"
+                  visible="false"
+                  position="0 0 0" scale="1 1 1" rotation="-90 0 0"
+                  class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
+        </a-entity>
+      </a-entity>
+    </a-nft>
+
+    <!-- ================================================================== -->
+    <!-- MARKER 8: CHEST (The End) -->
+    <!-- Logic: Just triggers the win message. -->
+    <!-- Unlocks: Stage 8 -->
+    <!-- ================================================================== -->
+    <a-nft
+      type="nft"
+      url="assets/markers/chest"
+      smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5"
+      id="marker-chest">
+      <!-- No model needed, just the message, or maybe show the chest again? -->
+      <a-entity scale="150 150 150">
+         <a-entity gltf-model="assets/models/8_medieval_chest/scene.gltf"
+                  position="0 0 0" scale="1 1 1" rotation="-90 0 0"
+                  animation="property: rotation; to: -90 360 0; loop: true; dur: 5000">
+         </a-entity>
       </a-entity>
     </a-nft>
 
@@ -368,24 +512,36 @@
     let currentStage = 0; 
     // 0 = Start (Find Map)
     // 1 = Map Found (Find Island)
-    // 2 = Island Found (Find Ship)
-    // 3 = Ship Found (Find Flag/End)
+    // 2 = Island Found (Find Ship Bottle)
+    // 3 = Ship Bottle Found (Find Ship/Attack)
+    // 4 = Ship Found (Find Pirate/Battle)
+    // 5 = Pirate Found (Find Shark/Dive)
+    // 6 = Shark Found (Find Jesus/Location)
+    // 7 = Jesus Found (Find Chest/Treasure)
+    // 8 = Chest Found (Win)
 
     // --- Elements ---
     const m_map    = document.getElementById('marker-map');
     const m_island = document.getElementById('marker-island');
+    const m_ship_bottle = document.getElementById('marker-ship-bottle');
     const m_ship   = document.getElementById('marker-ship');
+    const m_pirate = document.getElementById('marker-pirate');
+    const m_shark  = document.getElementById('marker-shark');
+    const m_jesus  = document.getElementById('marker-jesus');
+    const m_chest  = document.getElementById('marker-chest');
 
     const island_locked   = document.getElementById('island-locked');
     const island_unlocked = document.getElementById('island-unlocked');
+    const ship_bottle_locked = document.getElementById('ship-bottle-locked');
+    const ship_bottle_unlocked = document.getElementById('ship-bottle-unlocked');
     const ship_locked     = document.getElementById('ship-locked');
     const ship_unlocked   = document.getElementById('ship-unlocked');
+    // Pirate, Shark, Jesus, Chest don't have locked/unlocked pairs in the same way, or are handled dynamically
 
     // --- Logic ---
     
     // 1. Found MAP -> Unlock Stage 1
     m_map.addEventListener('markerFound', () => {
-      console.log("Map found!");
       if (currentStage < 1) {
         currentStage = 1;
         updateVisibility();
@@ -393,9 +549,8 @@
       }
     });
 
-    // 2. Found ISLAND -> Unlock Stage 2 (if allowed)
+    // 2. Found ISLAND -> Unlock Stage 2
     m_island.addEventListener('markerFound', () => {
-      console.log("Island found!");
       if (currentStage >= 1) {
         if (currentStage < 2) {
           currentStage = 2;
@@ -403,49 +558,125 @@
           showStory("Land Ho!", "Welcome to the Island! But the treasure ain't here... Find the lost Ship in a Bottle to continue yer quest!");
         }
       } else {
-        // Locked message
         showStory("Locked!", "Ye can't be here yet! Find the Map first, ye scallywag!");
       }
     });
 
-    // 3. Found SHIP -> Unlock Stage 3 (if allowed)
-    m_ship.addEventListener('markerFound', () => {
-      console.log("Ship found!");
+    // 3. Found SHIP BOTTLE -> Unlock Stage 3
+    m_ship_bottle.addEventListener('markerFound', () => {
       if (currentStage >= 2) {
         if (currentStage < 3) {
           currentStage = 3;
           updateVisibility();
-          showStory("Ghost Ship Found!", "Shiver me timbers! Ye found the Ghost Ship! The treasure is yours!");
+          showStory("Ghost Ship Found!", "Shiver me timbers! Ye found the Ghost Ship! But wait... a real ship is approaching!");
         }
       } else {
         showStory("Locked!", "Ye need to find the Island before ye can board this ship!");
       }
     });
 
+    // 4. Found SHIP -> Unlock Stage 4
+    m_ship.addEventListener('markerFound', () => {
+      if (currentStage >= 3) {
+        if (currentStage < 4) {
+          currentStage = 4;
+          updateVisibility();
+          showStory("Pirate Attack!", "A pirate is attacking to steal the map! Find the Pirate marker to fight back!");
+        }
+      } else {
+        showStory("Locked!", "Find the Ghost Ship (Bottle) first!");
+      }
+    });
+
+    // 5. Found PIRATE -> Unlock Stage 5 (Timed Event)
+    m_pirate.addEventListener('markerFound', () => {
+      if (currentStage >= 4) {
+        if (currentStage < 5) {
+          // Phase 1: Fire!
+          document.getElementById('pirate-phase1').setAttribute('visible', 'true');
+          showStory("FIRE!", "Take that ye scurvy dog!");
+          
+          // Wait 4 seconds, then Phase 2: Shark
+          setTimeout(() => {
+             document.getElementById('pirate-phase1').setAttribute('visible', 'false');
+             document.getElementById('pirate-phase2').setAttribute('visible', 'true');
+             currentStage = 5;
+             updateVisibility();
+             showStory("Man Overboard!", "Jump in the water! The sharks are circling!");
+          }, 4000);
+        }
+      } else {
+        showStory("Locked!", "Find the attacking Ship first!");
+      }
+    });
+
+    // 6. Found SHARK -> Unlock Stage 6
+    m_shark.addEventListener('markerFound', () => {
+      if (currentStage >= 5) {
+        if (currentStage < 6) {
+          currentStage = 6;
+          updateVisibility();
+          showStory("Dive Deep!", "Dive deep into the abyss to find the secret location marked on the map!");
+        }
+      } else {
+        showStory("Locked!", "Ye must survive the shark attack first!");
+      }
+    });
+
+    // 7. Found JESUS -> Unlock Stage 7
+    m_jesus.addEventListener('markerFound', () => {
+      if (currentStage >= 6) {
+        if (currentStage < 7) {
+          currentStage = 7;
+          updateVisibility();
+          showStory("The Secret Place!", "Ye found the underwater ruins! The treasure must be close. Find the Chest!");
+        }
+      } else {
+        showStory("Locked!", "Dive deeper past the sharks first!");
+      }
+    });
+
+    // 8. Found CHEST -> Win
+    m_chest.addEventListener('markerFound', () => {
+      if (currentStage >= 7) {
+        if (currentStage < 8) {
+          currentStage = 8;
+          updateVisibility();
+          showStory("TREASURE!", "Congratulations! Ye found the lost treasure of the Seven Seas! You are a true Pirate Legend!");
+        }
+      } else {
+        showStory("Locked!", "Ye haven't found the secret location yet!");
+      }
+    });
+
+
     function updateVisibility() {
-      // Update Level Bar
-      document.getElementById('lvl-1').className = currentStage >= 0 ? 'level-dot completed' : 'level-dot';
-      document.getElementById('lvl-2').className = currentStage >= 1 ? (currentStage > 1 ? 'level-dot completed' : 'level-dot active') : 'level-dot';
-      document.getElementById('lvl-3').className = currentStage >= 2 ? (currentStage > 2 ? 'level-dot completed' : 'level-dot active') : 'level-dot';
-      document.getElementById('lvl-4').className = currentStage >= 3 ? 'level-dot completed' : 'level-dot';
+      // Update Level Bar (Simplified for 8 stages)
+      // You can add more dots to HTML if you want, or just light them up in groups
+      const dots = document.querySelectorAll('.level-dot');
+      if(dots.length > 0) dots[0].className = currentStage >= 0 ? 'level-dot completed' : 'level-dot';
+      if(dots.length > 1) dots[1].className = currentStage >= 2 ? 'level-dot completed' : (currentStage >= 1 ? 'level-dot active' : 'level-dot');
+      if(dots.length > 2) dots[2].className = currentStage >= 4 ? 'level-dot completed' : (currentStage >= 3 ? 'level-dot active' : 'level-dot');
+      if(dots.length > 3) dots[3].className = currentStage >= 8 ? 'level-dot completed' : (currentStage >= 5 ? 'level-dot active' : 'level-dot');
 
-      // Island Marker Logic
-      if (currentStage >= 1) {
-        island_locked.setAttribute('visible', 'false');
-        island_unlocked.setAttribute('visible', 'true');
-      } else {
-        island_locked.setAttribute('visible', 'true');
-        island_unlocked.setAttribute('visible', 'false');
-      }
+      // Helper to toggle locked/unlocked models
+      const toggle = (idLocked, idUnlocked, unlocked) => {
+         const l = document.getElementById(idLocked);
+         const u = document.getElementById(idUnlocked);
+         if(l && u) {
+            l.setAttribute('visible', !unlocked);
+            u.setAttribute('visible', unlocked);
+         }
+      };
 
-      // Ship Marker Logic
-      if (currentStage >= 2) {
-        ship_locked.setAttribute('visible', 'false');
-        ship_unlocked.setAttribute('visible', 'true');
-      } else {
-        ship_locked.setAttribute('visible', 'true');
-        ship_unlocked.setAttribute('visible', 'false');
-      }
+      toggle('island-locked', 'island-unlocked', currentStage >= 1);
+      toggle('ship-bottle-locked', 'ship-bottle-unlocked', currentStage >= 2);
+      toggle('ship-locked', 'ship-unlocked', currentStage >= 3);
+      toggle('pirate-locked', 'pirate-phase1', false); // Special handling in event listener
+      // Note: Pirate phase 2 is handled in the timeout
+      toggle('shark-locked', 'shark-unlocked', currentStage >= 5);
+      toggle('jesus-locked', 'jesus-unlocked', currentStage >= 6);
+      // Chest has no locked model, just appears
     }
 
     // --- Story Modal Logic ---
@@ -498,7 +729,7 @@
       });
     }
 
-    // document.getElementById('btn-color').addEventListener('click', () => cube.emit('random-color'));
+    // document.getElementById('btn-color').addEventListener('click', () =>                     e.emit('random-color'));
 
     // Gesture hooks
     // cube.addEventListener('tap',       () => cube.emit('toggle-spin'));        // single tap: spin on/off
