@@ -11,26 +11,73 @@
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
 
   <style>
-    body { margin:0; overflow:hidden; }
+    body { margin:0; overflow:hidden; font-family: 'Courier New', Courier, monospace; }
+    
+    /* --- HUD (Bottom) --- */
     .hud {
       position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
       display: grid; grid-template-columns: repeat(5, auto); gap: 8px;
-      font: 600 14px/1 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       z-index: 10; pointer-events: none;
     }
     .hud.hidden { display: none; }
     .hud button {
       pointer-events: auto;
-      padding: 10px 12px; border: 0; border-radius: 10px;
-      background: rgba(255,255,255,.9);
+      padding: 10px 12px; border: 2px solid #4a3b2a; border-radius: 8px;
+      background: #d4b483; color: #4a3b2a; font-weight: bold;
+      box-shadow: 2px 2px 0px #4a3b2a;
     }
+    .hud button:active { transform: translate(2px, 2px); box-shadow: none; }
+
+    /* --- Story Overlay (Center) --- */
+    .story-overlay {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 80%; max-width: 400px;
+      background: url('https://www.transparenttextures.com/patterns/aged-paper.png'), #f4e4bc;
+      border: 4px solid #5c4033; border-radius: 10px;
+      padding: 20px; text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 20; display: none;
+    }
+    .story-overlay.visible { display: block; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .story-overlay h2 { margin-top: 0; color: #8b0000; text-transform: uppercase; letter-spacing: 2px; }
+    .story-overlay p { font-size: 1.1em; line-height: 1.4; color: #3e2723; }
+    .story-overlay button {
+      margin-top: 15px; padding: 10px 20px;
+      background: #8b0000; color: #fff; border: none; border-radius: 5px;
+      font-size: 1em; cursor: pointer;
+    }
+    @keyframes popIn { from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+
+    /* --- Level Indicator (Top) --- */
+    .level-bar {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 15px; z-index: 10;
+      background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 30px;
+    }
+    .level-dot {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #555; border: 2px solid #888;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 20px; color: #aaa; opacity: 0.5;
+      transition: all 0.3s ease;
+    }
+    .level-dot.active {
+      background: #d4b483; border-color: #8b0000;
+      color: #8b0000; opacity: 1; transform: scale(1.2);
+      box-shadow: 0 0 15px #d4b483;
+    }
+    .level-dot.completed {
+      background: #4caf50; border-color: #2e7d32;
+      color: white; opacity: 1;
+    }
+
     /* Loader for NFT */
     .arjs-loader {
       height: 100%; width: 100%; position: absolute; top: 0; left: 0;
       background-color: rgba(0, 0, 0, 0.8); z-index: 9999;
       display: flex; justify-content: center; align-items: center;
     }
-    .arjs-loader div { text-align: center; font-size: 1.25em; color: white; }
+    .arjs-loader div { text-align: center; font-size: 1.25em; color: white; font-family: sans-serif; }
   </style>
 
   <script>
@@ -190,7 +237,22 @@
 <body>
   <!-- Loader -->
   <div class="arjs-loader">
-    <div>Loading, please wait...</div>
+    <div>Loading the Pirate World...</div>
+  </div>
+
+  <!-- Level Bar -->
+  <div class="level-bar">
+    <div class="level-dot active" id="lvl-1">🗺️</div>
+    <div class="level-dot" id="lvl-2">🏝️</div>
+    <div class="level-dot" id="lvl-3">⛵</div>
+    <div class="level-dot" id="lvl-4">👻</div>
+  </div>
+
+  <!-- Story Overlay -->
+  <div class="story-overlay" id="story-modal">
+    <h2 id="story-title">Title</h2>
+    <p id="story-text">Text goes here...</p>
+    <button onclick="closeStory()">Aye Aye!</button>
   </div>
 
   <!-- HUD -->
@@ -228,8 +290,9 @@
       
       <a-entity scale="150 150 150">
         <!-- Correct Model: 2_island -->
+        <!-- Rotation fix: -90 0 0 is standard for flat markers. If side view needed, try 0 0 0 or -90 90 0 -->
         <a-entity gltf-model="assets/models/2_island/scene.gltf"
-                  position="0 0 0" scale="1 1 1"
+                  position="0 0 0" scale="1 1 1" rotation="-90 0 0"
                   class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
         </a-entity>
       </a-entity>
@@ -251,7 +314,7 @@
         <a-entity id="island-locked"
                   gltf-model="assets/models/1_pirate_map/scene.gltf"
                   visible="true"
-                  position="0 0 0" scale="1 1 1"
+                  position="0 0 0" scale="1 1 1" rotation="-90 0 0"
                   class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
         </a-entity>
 
@@ -259,7 +322,7 @@
         <a-entity id="island-unlocked"
                   gltf-model="assets/models/3_ship_in_a_bottle/scene.gltf"
                   visible="false"
-                  position="0 0 0" scale="1 1 1"
+                  position="0 0 0" scale="1 1 1" rotation="-90 0 0"
                   class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
         </a-entity>
       </a-entity>
@@ -267,7 +330,7 @@
 
     <!-- ================================================================== -->
     <!-- MARKER 3: SHIP BOTTLE -->
-    <!-- Logic: Shows Flag (Model 4) IF Stage >= 2. Else shows Map (Model 1). -->
+    <!-- Logic: Shows Ghost Ship (Model 5) IF Stage >= 2. Else shows Map (Model 1). -->
     <!-- Unlocks: Stage 3 -->
     <!-- ================================================================== -->
     <a-nft
@@ -281,15 +344,15 @@
         <a-entity id="ship-locked"
                   gltf-model="assets/models/1_pirate_map/scene.gltf"
                   visible="true"
-                  position="0 0 0" scale="1 1 1"
+                  position="0 0 0" scale="1 1 1" rotation="-90 0 0"
                   class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
         </a-entity>
 
-        <!-- UNLOCKED STATE: 4_pirate_flag_animated -->
+        <!-- UNLOCKED STATE: 5_ghost_ship -->
         <a-entity id="ship-unlocked"
-                  gltf-model="assets/models/4_pirate_flag_animated/scene.gltf"
+                  gltf-model="assets/models/5_ghost_ship/scene.gltf"
                   visible="false"
-                  position="0 0 0" scale="1 1 1"
+                  position="0 0 0" scale="1 1 1" rotation="-90 0 0"
                   class="raytarget" tap-gestures spin-toggle pinch-scale twist-rotate>
         </a-entity>
       </a-entity>
@@ -326,7 +389,7 @@
       if (currentStage < 1) {
         currentStage = 1;
         updateVisibility();
-        alert("Map Found! Next clue unlocked: Find the Island.");
+        showStory("The Adventure Begins!", "Arrr! Ye found the map to the treasure! Now, set yer sights on the Island of Skulls!");
       }
     });
 
@@ -337,11 +400,11 @@
         if (currentStage < 2) {
           currentStage = 2;
           updateVisibility();
-          alert("Island Found! Next clue unlocked: Find the Ship in a Bottle.");
+          showStory("Land Ho!", "Welcome to the Island! But the treasure ain't here... Find the lost Ship in a Bottle to continue yer quest!");
         }
       } else {
-        // Locked message (optional, since we show the locked model)
-        console.log("Island locked. Find Map first.");
+        // Locked message
+        showStory("Locked!", "Ye can't be here yet! Find the Map first, ye scallywag!");
       }
     });
 
@@ -352,14 +415,20 @@
         if (currentStage < 3) {
           currentStage = 3;
           updateVisibility();
-          alert("Ship Found! You found the Pirate Flag!");
+          showStory("Ghost Ship Found!", "Shiver me timbers! Ye found the Ghost Ship! The treasure is yours!");
         }
       } else {
-        console.log("Ship locked. Find Island first.");
+        showStory("Locked!", "Ye need to find the Island before ye can board this ship!");
       }
     });
 
     function updateVisibility() {
+      // Update Level Bar
+      document.getElementById('lvl-1').className = currentStage >= 0 ? 'level-dot completed' : 'level-dot';
+      document.getElementById('lvl-2').className = currentStage >= 1 ? (currentStage > 1 ? 'level-dot completed' : 'level-dot active') : 'level-dot';
+      document.getElementById('lvl-3').className = currentStage >= 2 ? (currentStage > 2 ? 'level-dot completed' : 'level-dot active') : 'level-dot';
+      document.getElementById('lvl-4').className = currentStage >= 3 ? 'level-dot completed' : 'level-dot';
+
       // Island Marker Logic
       if (currentStage >= 1) {
         island_locked.setAttribute('visible', 'false');
@@ -377,6 +446,21 @@
         ship_locked.setAttribute('visible', 'true');
         ship_unlocked.setAttribute('visible', 'false');
       }
+    }
+
+    // --- Story Modal Logic ---
+    const modal = document.getElementById('story-modal');
+    const titleEl = document.getElementById('story-title');
+    const textEl = document.getElementById('story-text');
+
+    function showStory(title, text) {
+      titleEl.innerText = title;
+      textEl.innerText = text;
+      modal.classList.add('visible');
+    }
+
+    window.closeStory = function() {
+      modal.classList.remove('visible');
     }
 
     // Initialize
